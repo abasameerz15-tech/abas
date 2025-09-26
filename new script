@@ -16,24 +16,24 @@ mainBtn.Parent = gui
 
 -- تأثير الريمبو على زر MainBtn
 task.spawn(function()
-	while mainBtn and mainBtn.Parent do
-		local t = tick()
-		mainBtn.BackgroundColor3 = Color3.new((math.sin(t)+1)/2, (math.sin(t+2)+1)/2, (math.sin(t+4)+1)/2)
-		task.wait(0.05)
-	end
+ while mainBtn and mainBtn.Parent do
+  local t = tick()
+  mainBtn.BackgroundColor3 = Color3.new((math.sin(t)+1)/2, (math.sin(t+2)+1)/2, (math.sin(t+4)+1)/2)
+  task.wait(0.05)
+ end
 end)
 
 -- دالة لإنشاء القوائم
 local function createFrame(width, height, color)
-	local f = Instance.new("Frame")
-	f.Size = UDim2.new(0, width, 0, height)
-	f.Position = UDim2.new(0.5, -width/2, 0.25, 0)
-	f.BackgroundColor3 = color
-	f.Visible = false
-	f.Active = true
-	f.Draggable = true
-	f.Parent = gui
-	return f
+ local f = Instance.new("Frame")
+ f.Size = UDim2.new(0, width, 0, height)
+ f.Position = UDim2.new(0.5, -width/2, 0.25, 0)
+ f.BackgroundColor3 = color
+ f.Visible = false
+ f.Active = true
+ f.Draggable = true
+ f.Parent = gui
+ return f
 end
 
 -- القوائم
@@ -124,15 +124,14 @@ flyBtn.Parent = flyFrame
 
 -- أحداث الأزرار
 mainBtn.MouseButton1Click:Connect(function()
-	mainFrame.Visible = not mainFrame.Visible
+ mainFrame.Visible = not mainFrame.Visible
 end)
 
 btnPart.MouseButton1Click:Connect(function()
-	partFrame.Visible = not partFrame.Visible
+ partFrame.Visible = not partFrame.Visible
 end)
-
 btnFly.MouseButton1Click:Connect(function()
-	flyFrame.Visible = not flyFrame.Visible
+ flyFrame.Visible = not flyFrame.Visible
 end)
 
 -- منطق Part
@@ -142,44 +141,44 @@ local char = player.Character or player.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 
 partBtn.MouseButton1Click:Connect(function()
-	if not partRunning then
-		activePart = Instance.new("Part")
-		activePart.Size = Vector3.new(6,1,6)
-		activePart.Anchored = true
-		activePart.Position = hrp.Position - Vector3.new(0, 3, 0)
-		activePart.Parent = workspace
+ if not partRunning then
+  activePart = Instance.new("Part")
+  activePart.Size = Vector3.new(6,1,6)
+  activePart.Anchored = true
+  activePart.Position = hrp.Position - Vector3.new(0, 3, 0)
+  activePart.Parent = workspace
 
-		local billboard = Instance.new("BillboardGui")
-		billboard.Size = UDim2.new(0, 150, 0, 50)
-		billboard.Adornee = activePart
-		billboard.AlwaysOnTop = true
-		billboard.Parent = activePart
+  local billboard = Instance.new("BillboardGui")
+  billboard.Size = UDim2.new(0, 150, 0, 50)
+  billboard.Adornee = activePart
+  billboard.AlwaysOnTop = true
+  billboard.Parent = activePart
 
-		local textLabel = Instance.new("TextLabel")
-		textLabel.Size = UDim2.new(1, 0, 1, 0)
-		textLabel.BackgroundTransparency = 1
-		textLabel.Text = "S1 Discord"
-		textLabel.Font = Enum.Font.SourceSansBold
-		textLabel.TextScaled = true
-		textLabel.Parent = billboard
+  local textLabel = Instance.new("TextLabel")
+  textLabel.Size = UDim2.new(1, 0, 1, 0)
+  textLabel.BackgroundTransparency = 1
+  textLabel.Text = "S1 Discord"
+  textLabel.Font = Enum.Font.SourceSansBold
+  textLabel.TextScaled = true
+  textLabel.Parent = billboard
 
-		partRunning = true
-		task.spawn(function()
-			while partRunning and activePart do
-				local t = tick()
-				activePart.Color = Color3.new((math.sin(t)+1)/2, (math.sin(t+2)+1)/2, (math.sin(t+4)+1)/2)
-				textLabel.TextColor3 = Color3.new((math.sin(t+1)+1)/2, (math.sin(t+3)+1)/2, (math.sin(t+5)+1)/2)
-				activePart.Position = hrp.Position - Vector3.new(0, 3, 0)
-				task.wait(0.05)
-			end
-		end)
-	else
-		partRunning = false
-		if activePart then
-			activePart:Destroy()
-			activePart = nil
-		end
-	end
+  partRunning = true
+  task.spawn(function()
+   while partRunning and activePart do
+    local t = tick()
+    activePart.Color = Color3.new((math.sin(t)+1)/2, (math.sin(t+2)+1)/2, (math.sin(t+4)+1)/2)
+    textLabel.TextColor3 = Color3.new((math.sin(t+1)+1)/2, (math.sin(t+3)+1)/2, (math.sin(t+5)+1)/2)
+    activePart.Position = hrp.Position - Vector3.new(0, 3, 0)
+    task.wait(0.05)
+   end
+  end)
+ else
+  partRunning = false
+  if activePart then
+   activePart:Destroy()
+   activePart = nil
+  end
+ end
 end)
 
 -- منطق Fly
@@ -187,18 +186,111 @@ local flying = false
 local hum = char:WaitForChild("Humanoid")
 
 flyBtn.MouseButton1Click:Connect(function()
-	if not flying then
-		flying = true
-		hum.PlatformStand = true
-		task.spawn(function()
-			while flying do
-				local moveDir = hum.MoveDirection
-				hrp.Velocity = Vector3.new(moveDir.X*20, 20, moveDir.Z*20)
-				task.wait(0.1)
-			end
-		end)
-	else
-		flying = false
-		hum.PlatformStand = false
-		hrp.Velocity = Vector3.new(0,0,0)
-	end
+ if not flying then
+  flying = true
+  hum.PlatformStand = true
+  task.spawn(function()
+   while flying do
+    local moveDir = hum.MoveDirection
+    hrp.Velocity = Vector3.new(moveDir.X*20, 20, moveDir.Z*20)
+    task.wait(0.1)
+   end
+  end)
+ else
+  flying = false
+  hum.PlatformStand = false
+  hrp.Velocity = Vector3.new(0,0,0)
+ end
+end)
+
+-- منطق ESP اللاعبين
+local espEnabled = false
+local espBoxes = {}
+
+btnESP.MouseButton1Click:Connect(function()
+ espEnabled = not espEnabled
+ if not espEnabled then
+  for _, box in pairs(espBoxes) do
+   if box and box.Parent then
+    box:Destroy()
+   end
+  end
+  espBoxes = {}
+ end
+end)
+
+task.spawn(function()
+ while true do
+  if espEnabled then
+   for _, plr in pairs(game.Players:GetPlayers()) do
+    if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+     if not espBoxes[plr] then
+      local box = Instance.new("BillboardGui")
+      box.Size = UDim2.new(0, 100, 0, 50)
+      box.Adornee = plr.Character.HumanoidRootPart
+      box.AlwaysOnTop = true
+      box.Parent = gui
+
+      local text = Instance.new("TextLabel")
+      text.Size = UDim2.new(1, 0, 1, 0)
+      text.BackgroundTransparency = 1
+      text.TextColor3 = Color3.fromRGB(0, 255, 0)
+      text.Font = Enum.Font.SourceSansBold
+      text.TextScaled = true
+      text.Parent = box
+
+      espBoxes[plr] = text
+     end
+     local dist = math.floor((hrp.Position - plr.Character.HumanoidRootPart.Position).Magnitude)
+     espBoxes[plr].Text = plr.Name.." | "..dist.."m"
+    end
+   end
+  end
+  task.wait(0.1)
+ end
+end)
+
+-- منطق كشف البيوت
+local basesEnabled = false
+local baseMarkers = {}
+
+btnBases.MouseButton1Click:Connect(function()
+ basesEnabled = not basesEnabled
+ if not basesEnabled then
+  for _, marker in pairs(baseMarkers) do
+   if marker and marker.Parent then
+    marker:Destroy()
+   end
+  end
+  baseMarkers = {}
+ end
+end)
+
+task.spawn(function()
+ while true do
+  if basesEnabled then
+   for _, base in pairs(workspace:GetChildren()) do
+    if base.Name == "Base" and base:FindFirstChild("HumanoidRootPart") then
+     if not baseMarkers[base] then
+      local marker = Instance.new("BillboardGui")
+      marker.Size = UDim2.new(0, 100, 0, 50)
+      marker.Adornee = base.HumanoidRootPart
+      marker.AlwaysOnTop = true
+      marker.Parent = gui
+local label = Instance.new("TextLabel")
+      label.Size = UDim2.new(1, 0, 1, 0)
+      label.BackgroundTransparency = 1
+      label.Text = "بيت " .. base.Name
+      label.TextColor3 = Color3.fromRGB(255, 255, 0)
+      label.Font = Enum.Font.SourceSansBold
+      label.TextScaled = true
+      label.Parent = marker
+
+      baseMarkers[base] = marker
+     end
+    end
+   end
+  end
+  task.wait(1)
+ end
+end)
