@@ -1,415 +1,204 @@
---================= إعدادات أساسية =================--
+-- سكربت من صنع S1community 🌹
+
 local player = game.Players.LocalPlayer
-local PlayerGui = player:WaitForChild("PlayerGui")
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "S1communityUI"
 
---================= واجهة رئيسية =================--
-local mainGui = Instance.new("ScreenGui")
-mainGui.Name = "IRAQHUB_GUI"
-mainGui.ResetOnSpawn = false
-mainGui.Parent = PlayerGui
+-- زر رئيسي
+local mainBtn = Instance.new("TextButton")
+mainBtn.Size = UDim2.new(0, 100, 0, 35)
+mainBtn.Position = UDim2.new(0.5, -50, 0, 10)
+mainBtn.Text = "S1community"
+mainBtn.TextColor3 = Color3.new(1,1,1)
+mainBtn.Font = Enum.Font.SourceSansBold
+mainBtn.TextSize = 18
+mainBtn.Parent = gui
 
--- زر IRAQHUB أعلى الشاشة
-local hubBtn = Instance.new("TextButton")
-hubBtn.Size = UDim2.new(0,140,0,40)
-hubBtn.Position = UDim2.new(0.5,-70,0,10)
-hubBtn.BackgroundColor3 = Color3.fromRGB(0,170,255)
-hubBtn.Text = "IRAQHUB"
-hubBtn.Font = Enum.Font.SourceSansBold
-hubBtn.TextSize = 20
-hubBtn.TextColor3 = Color3.fromRGB(255,255,255)
-hubBtn.Parent = mainGui
-
--- قائمة اختيار
-local selectFrame = Instance.new("Frame")
-selectFrame.Size = UDim2.new(0,220,0,320) -- زدت الارتفاع
-selectFrame.Position = UDim2.new(0.5,-110,0.5,-160)
-selectFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
-selectFrame.BorderSizePixel = 0
-selectFrame.Active = true
-selectFrame.Draggable = true
-selectFrame.Visible = false
-selectFrame.Parent = mainGui
-
-local selectTitle = Instance.new("TextLabel")
-selectTitle.Size = UDim2.new(1,0,0,40)
-selectTitle.BackgroundTransparency = 1
-selectTitle.Text = "Select Version"
-selectTitle.Font = Enum.Font.SourceSansBold
-selectTitle.TextSize = 22
-selectTitle.TextColor3 = Color3.fromRGB(255,255,255)
-selectTitle.Parent = selectFrame
-
-hubBtn.MouseButton1Click:Connect(function()
-	selectFrame.Visible = not selectFrame.Visible
+-- تأثير الريمبو على زر MainBtn
+task.spawn(function()
+	while mainBtn and mainBtn.Parent do
+		local t = tick()
+		mainBtn.BackgroundColor3 = Color3.new((math.sin(t)+1)/2, (math.sin(t+2)+1)/2, (math.sin(t+4)+1)/2)
+		task.wait(0.05)
+	end
 end)
 
---================= زر V1 =================--
-local function createV1()
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "SZ_V1"
-	gui.ResetOnSpawn = false
-	gui.Parent = PlayerGui
-
-	local mainFrame = Instance.new("Frame")
-	mainFrame.Size = UDim2.new(0,180,0,140)
-	mainFrame.Position = UDim2.new(0.4,0,0.4,0)
-	mainFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
-	mainFrame.BorderSizePixel = 0
-	mainFrame.Active = true
-	mainFrame.Draggable = true
-	mainFrame.Parent = gui
-
-	local title = Instance.new("TextLabel")
-	title.Size = UDim2.new(1,0,0,30)
-	title.BackgroundTransparency = 1
-	title.Text = "SZ STORE V1"
-	title.Font = Enum.Font.SourceSansBold
-	title.TextSize = 22
-	title.TextColor3 = Color3.fromRGB(255,255,255)
-	title.Parent = mainFrame
-
-	local partBtn = Instance.new("TextButton")
-	partBtn.Size = UDim2.new(0.8,0,0,30)
-	partBtn.Position = UDim2.new(0.1,0,0.45,0)
-	partBtn.Text = "Part"
-	partBtn.Font = Enum.Font.SourceSansBold
-	partBtn.TextSize = 20
-	partBtn.BackgroundColor3 = Color3.fromRGB(0,170,255)
-	partBtn.TextColor3 = Color3.fromRGB(255,255,255)
-	partBtn.Parent = mainFrame
-
-	local building = false
-	local liftPart
-	local followConn
-	local riseConn
-
-	local function stopBuilding()
-		building = false
-		if followConn then followConn:Disconnect() end
-		if riseConn then riseConn:Disconnect() end
-		if liftPart then liftPart:Destroy() end
-		partBtn.Text = "Part"
-	end
-
-	partBtn.MouseButton1Click:Connect(function()
-		if not building then
-			building = true
-			partBtn.Text = "جاري البناء..."
-
-			local char = player.Character or player.CharacterAdded:Wait()
-			local root = char:WaitForChild("HumanoidRootPart")
-			local humanoid = char:WaitForChild("Humanoid")
-
-			liftPart = Instance.new("Part")
-			liftPart.Size = Vector3.new(6,1,6)
-			liftPart.Anchored = true
-			liftPart.Color = Color3.fromRGB(100,255,100)
-			liftPart.Parent = workspace
-
-			followConn = RunService.Heartbeat:Connect(function()
-				if root and liftPart then
-					local footY = root.Position.Y - humanoid.HipHeight - (root.Size.Y/2) + 0.5
-					liftPart.Position = Vector3.new(root.Position.X, footY, root.Position.Z)
-				end
-			end)
-
-			local speed = 0.8
-			riseConn = RunService.Heartbeat:Connect(function(dt)
-				if liftPart and building then
-					liftPart.Position += Vector3.new(0, dt*speed, 0)
-				end
-			end)
-		else
-			stopBuilding()
-		end
-	end)
+-- دالة لإنشاء القوائم
+local function createFrame(width, height, color)
+	local f = Instance.new("Frame")
+	f.Size = UDim2.new(0, width, 0, height)
+	f.Position = UDim2.new(0.5, -width/2, 0.25, 0)
+	f.BackgroundColor3 = color
+	f.Visible = false
+	f.Active = true
+	f.Draggable = true
+	f.Parent = gui
+	return f
 end
 
---================= زر V2 =================--
-local function createV2()
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "SZ_V2"
-	gui.ResetOnSpawn = false
-	gui.Parent = PlayerGui
+-- القوائم
+local mainFrame = createFrame(220, 220, Color3.fromRGB(40,40,40))
+local partFrame = createFrame(180, 120, Color3.fromRGB(30,30,30))
+local flyFrame  = createFrame(180, 120, Color3.fromRGB(30,30,30))
 
-	local mainFrame = Instance.new("Frame")
-	mainFrame.Size = UDim2.new(0,180,0,140)
-	mainFrame.Position = UDim2.new(0.4,0,0.4,0)
-	mainFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
-	mainFrame.BorderSizePixel = 0
-	mainFrame.Active = true
-	mainFrame.Draggable = true
-	mainFrame.Parent = gui
+-- أزرار داخل القائمة الرئيسية
+local btnPart = Instance.new("TextButton")
+btnPart.Size = UDim2.new(1, -20, 0, 30)
+btnPart.Position = UDim2.new(0, 10, 0, 25)
+btnPart.Text = "S1 Part"
+btnPart.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+btnPart.TextColor3 = Color3.new(1,1,1)
+btnPart.Font = Enum.Font.SourceSansBold
+btnPart.TextSize = 16
+btnPart.Parent = mainFrame
 
-	local title = Instance.new("TextLabel")
-	title.Size = UDim2.new(1,0,0,30)
-	title.BackgroundTransparency = 1
-	title.Text = "SZ STORE V2"
-	title.Font = Enum.Font.SourceSansBold
-	title.TextSize = 22
-	title.TextColor3 = Color3.fromRGB(255,255,255)
-	title.Parent = mainFrame
+local btnFly = Instance.new("TextButton")
+btnFly.Size = UDim2.new(1, -20, 0, 30)
+btnFly.Position = UDim2.new(0, 10, 0, 65)
+btnFly.Text = "S1 Fly"
+btnFly.BackgroundColor3 = Color3.fromRGB(0,100,0)
+btnFly.TextColor3 = Color3.new(1,1,1)
+btnFly.Font = Enum.Font.SourceSansBold
+btnFly.TextSize = 16
+btnFly.Parent = mainFrame
 
-	local partBtn = Instance.new("TextButton")
-	partBtn.Size = UDim2.new(0.8,0,0,30)
-	partBtn.Position = UDim2.new(0.1,0,0.45,0)
-	partBtn.Text = "Part"
-	partBtn.Font = Enum.Font.SourceSansBold
-	partBtn.TextSize = 20
-	partBtn.BackgroundColor3 = Color3.fromRGB(0,170,255)
-	partBtn.TextColor3 = Color3.fromRGB(255,255,255)
-	partBtn.Parent = mainFrame
+local btnESP = Instance.new("TextButton")
+btnESP.Size = UDim2.new(1, -20, 0, 30)
+btnESP.Position = UDim2.new(0, 10, 0, 105)
+btnESP.Text = "كشف اللاعبين"
+btnESP.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+btnESP.TextColor3 = Color3.new(1,1,1)
+btnESP.Font = Enum.Font.SourceSansBold
+btnESP.TextSize = 16
+btnESP.Parent = mainFrame
 
-	local building = false
-	local liftPart
-	local followConn
-	local riseConn
+local btnBases = Instance.new("TextButton")
+btnBases.Size = UDim2.new(1, -20, 0, 30)
+btnBases.Position = UDim2.new(0, 10, 0, 145)
+btnBases.Text = "كشف البيوت"
+btnBases.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+btnBases.TextColor3 = Color3.new(1, 1, 1)
+btnBases.Font = Enum.Font.SourceSansBold
+btnBases.TextSize = 16
+btnBases.Parent = mainFrame
 
-	local function stopBuilding()
-		building = false
-		if followConn then followConn:Disconnect() end
-		if riseConn then riseConn:Disconnect() end
-		if liftPart then liftPart:Destroy() end
-		partBtn.Text = "Part"
-	end
+-- محتوى قائمة Part
+local partTitle = Instance.new("TextLabel")
+partTitle.Size = UDim2.new(1, 0, 0, 25)
+partTitle.Text = "S1 community"
+partTitle.TextColor3 = Color3.new(1,1,1)
+partTitle.BackgroundTransparency = 1
+partTitle.Font = Enum.Font.SourceSansBold
+partTitle.TextSize = 16
+partTitle.Parent = partFrame
 
-	partBtn.MouseButton1Click:Connect(function()
-		if not building then
-			building = true
-			partBtn.Text = "جاري البناء..."
+local partBtn = Instance.new("TextButton")
+partBtn.Size = UDim2.new(1, -20, 0, 30)
+partBtn.Position = UDim2.new(0, 10, 0, 60)
+partBtn.Text = "Part"
+partBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+partBtn.TextColor3 = Color3.new(1,1,1)
+partBtn.Font = Enum.Font.SourceSansBold
+partBtn.TextSize = 16
+partBtn.Parent = partFrame
 
-			local char = player.Character or player.CharacterAdded:Wait()
-			local root = char:WaitForChild("HumanoidRootPart")
-			local humanoid = char:WaitForChild("Humanoid")
+-- محتوى قائمة Fly
+local flyTitle = Instance.new("TextLabel")
+flyTitle.Size = UDim2.new(1, 0, 0, 25)
+flyTitle.Text = "S1 community"
+flyTitle.TextColor3 = Color3.new(1,1,1)
+flyTitle.BackgroundTransparency = 1
+flyTitle.Font = Enum.Font.SourceSansBold
+flyTitle.TextSize = 16
+flyTitle.Parent = flyFrame
 
-			liftPart = Instance.new("Part")
-			liftPart.Size = Vector3.new(6,1,6)
-			liftPart.Anchored = true
-			liftPart.Color = Color3.fromRGB(100,255,100)
-			liftPart.Parent = workspace
+local flyBtn = Instance.new("TextButton")
+flyBtn.Size = UDim2.new(1, -20, 0, 30)
+flyBtn.Position = UDim2.new(0, 10, 0, 60)
+flyBtn.Text = "Fly"
+flyBtn.BackgroundColor3 = Color3.fromRGB(0,120,0)
+flyBtn.TextColor3 = Color3.new(1,1,1)
+flyBtn.Font = Enum.Font.SourceSansBold
+flyBtn.TextSize = 16
+flyBtn.Parent = flyFrame
 
-			followConn = RunService.Heartbeat:Connect(function()
-				if root and liftPart then
-					local footY = root.Position.Y - humanoid.HipHeight - (root.Size.Y/2) + 0.5
-					liftPart.Position = Vector3.new(root.Position.X, footY, root.Position.Z)
-				end
-			end)
+-- أحداث الأزرار
+mainBtn.MouseButton1Click:Connect(function()
+	mainFrame.Visible = not mainFrame.Visible
+end)
 
-			local speed = 0.8
-			riseConn = RunService.Heartbeat:Connect(function(dt)
-				if liftPart and building then
-					liftPart.Position += Vector3.new(0, dt*speed, 0)
-				end
-			end)
-		else
-			stopBuilding()
-		end
-	end)
-end
+btnPart.MouseButton1Click:Connect(function()
+	partFrame.Visible = not partFrame.Visible
+end)
 
---================= ESP Player =================--
-local function addESPToCharacter(char, name)
-	local hl = Instance.new("Highlight")
-	hl.FillColor = Color3.fromRGB(0,255,0)
-	hl.OutlineColor = Color3.fromRGB(0,255,0)
-	hl.FillTransparency = 0.7
-	hl.OutlineTransparency = 0
-	hl.Adornee = char
-	hl.Parent = char
+btnFly.MouseButton1Click:Connect(function()
+	flyFrame.Visible = not flyFrame.Visible
+end)
 
-	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.new(0,100,0,20)
-	billboard.AlwaysOnTop = true
-	billboard.Adornee = char:WaitForChild("Head")
-	billboard.Parent = char
+-- منطق Part
+local activePart = nil
+local partRunning = false
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
 
-	local nameLabel = Instance.new("TextLabel")
-	nameLabel.Size = UDim2.new(1,0,1,0)
-	nameLabel.BackgroundTransparency = 1
-	nameLabel.Text = name
-	nameLabel.TextColor3 = Color3.fromRGB(0,255,0)
-	nameLabel.Font = Enum.Font.SourceSansBold
-	nameLabel.TextScaled = true
-	nameLabel.Parent = billboard
-end
+partBtn.MouseButton1Click:Connect(function()
+	if not partRunning then
+		activePart = Instance.new("Part")
+		activePart.Size = Vector3.new(6,1,6)
+		activePart.Anchored = true
+		activePart.Position = hrp.Position - Vector3.new(0, 3, 0)
+		activePart.Parent = workspace
 
-local function enableESP()
-	for _,plr in pairs(game.Players:GetPlayers()) do
-		if plr ~= player and plr.Character then
-			addESPToCharacter(plr.Character, plr.Name)
-		end
-		plr.CharacterAdded:Connect(function(char)
-			addESPToCharacter(char, plr.Name)
-		end)
-	end
-	game.Players.PlayerAdded:Connect(function(plr)
-		plr.CharacterAdded:Connect(function(char)
-			addESPToCharacter(char, plr.Name)
-		end)
-	end)
-end
+		local billboard = Instance.new("BillboardGui")
+		billboard.Size = UDim2.new(0, 150, 0, 50)
+		billboard.Adornee = activePart
+		billboard.AlwaysOnTop = true
+		billboard.Parent = activePart
 
---================= Float Window =================--
-local function createFloatGUI()
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "FloatSZ"
-	gui.ResetOnSpawn = false
-	gui.Parent = PlayerGui
+		local textLabel = Instance.new("TextLabel")
+		textLabel.Size = UDim2.new(1, 0, 1, 0)
+		textLabel.BackgroundTransparency = 1
+		textLabel.Text = "S1 Discord"
+		textLabel.Font = Enum.Font.SourceSansBold
+		textLabel.TextScaled = true
+		textLabel.Parent = billboard
 
-	local mainFrame = Instance.new("Frame")
-	mainFrame.Size = UDim2.new(0,160,0,100)
-	mainFrame.Position = UDim2.new(0.5,-80,0.1,0)
-	mainFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
-	mainFrame.BorderSizePixel = 0
-	mainFrame.Active = true
-	mainFrame.Draggable = true
-	mainFrame.Parent = gui
-
-	local title = Instance.new("TextLabel")
-	title.Size = UDim2.new(1,0,0,30)
-	title.BackgroundTransparency = 1
-	title.Text = "SZ STORE FLOAT"
-	title.Font = Enum.Font.SourceSansBold
-	title.TextSize = 20
-	title.TextColor3 = Color3.fromRGB(255,255,255)
-	title.Parent = mainFrame
-
-	local floatBtn = Instance.new("TextButton")
-	floatBtn.Size = UDim2.new(0.8,0,0,40)
-	floatBtn.Position = UDim2.new(0.1,0,0.45,0)
-	floatBtn.BackgroundColor3 = Color3.fromRGB(120,120,120)
-	floatBtn.TextColor3 = Color3.fromRGB(255,255,255)
-	floatBtn.Font = Enum.Font.SourceSansBold
-	floatBtn.TextSize = 18
-	floatBtn.Text = "Float"
-	floatBtn.Parent = mainFrame
-
-	local floatActive = false
-	local floatConn
-	local boostedSpeed = 60
-	local normalSpeed = 16
-
-	local function toggleFloat()
-		floatActive = not floatActive
-		local char = player.Character or player.CharacterAdded:Wait()
-		local root = char:WaitForChild("HumanoidRootPart")
-		local humanoid = char:WaitForChild("Humanoid")
-
-		if floatActive then
-			floatBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
-			workspace.Gravity = 0
-			humanoid.WalkSpeed = boostedSpeed
-			floatConn = RunService.Heartbeat:Connect(function()
-				root.Velocity = Vector3.new(root.Velocity.X, 0, root.Velocity.Z)
-			end)
-		else
-			floatBtn.BackgroundColor3 = Color3.fromRGB(120,120,120)
-			workspace.Gravity = 196.2
-			humanoid.WalkSpeed = normalSpeed
-			if floatConn then floatConn:Disconnect() end
-		end
-	end
-
-	floatBtn.MouseButton1Click:Connect(toggleFloat)
-end
-
---================= Infinite Jump =================--
-local infiniteJumpActive = false
-
-local function enableInfiniteJump()
-	infiniteJumpActive = true
-	UserInputService.JumpRequest:Connect(function()
-		if infiniteJumpActive then
-			local char = player.Character
-			if char then
-				local humanoid = char:FindFirstChildWhichIsA("Humanoid")
-				if humanoid then
-					humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-				end
+		partRunning = true
+		task.spawn(function()
+			while partRunning and activePart do
+				local t = tick()
+				activePart.Color = Color3.new((math.sin(t)+1)/2, (math.sin(t+2)+1)/2, (math.sin(t+4)+1)/2)
+				textLabel.TextColor3 = Color3.new((math.sin(t+1)+1)/2, (math.sin(t+3)+1)/2, (math.sin(t+5)+1)/2)
+				activePart.Position = hrp.Position - Vector3.new(0, 3, 0)
+				task.wait(0.05)
 			end
+		end)
+	else
+		partRunning = false
+		if activePart then
+			activePart:Destroy()
+			activePart = nil
 		end
-	end)
+	end
+end)
 
-	RunService.Heartbeat:Connect(function()
-		if infiniteJumpActive then
-			local char = player.Character
-			if char then
-				local humanoid = char:FindFirstChildWhichIsA("Humanoid")
-				if humanoid and humanoid.Health < humanoid.MaxHealth then
-					-- 🔒 يمنع ضرر السقوط
-					humanoid.Health = humanoid.MaxHealth
-				end
+-- منطق Fly
+local flying = false
+local hum = char:WaitForChild("Humanoid")
+
+flyBtn.MouseButton1Click:Connect(function()
+	if not flying then
+		flying = true
+		hum.PlatformStand = true
+		task.spawn(function()
+			while flying do
+				local moveDir = hum.MoveDirection
+				hrp.Velocity = Vector3.new(moveDir.X*20, 20, moveDir.Z*20)
+				task.wait(0.1)
 			end
-		end
-	end)
-end
-
---================= إنشاء أزرار =================--
-local v1Btn = Instance.new("TextButton")
-v1Btn.Size = UDim2.new(0.8,0,0,40)
-v1Btn.Position = UDim2.new(0.1,0,0.25,0)
-v1Btn.Text = "SZ STORE V1"
-v1Btn.Font = Enum.Font.SourceSansBold
-v1Btn.TextSize = 20
-v1Btn.BackgroundColor3 = Color3.fromRGB(0,170,255)
-v1Btn.TextColor3 = Color3.fromRGB(255,255,255)
-v1Btn.Parent = selectFrame
-
-local v2Btn = Instance.new("TextButton")
-v2Btn.Size = UDim2.new(0.8,0,0,40)
-v2Btn.Position = UDim2.new(0.1,0,0.42,0)
-v2Btn.Text = "SZ STORE V2"
-v2Btn.Font = Enum.Font.SourceSansBold
-v2Btn.TextSize = 20
-v2Btn.BackgroundColor3 = Color3.fromRGB(0,170,255)
-v2Btn.TextColor3 = Color3.fromRGB(255,255,255)
-v2Btn.Parent = selectFrame
-
-local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0.8,0,0,40)
-espBtn.Position = UDim2.new(0.1,0,0.59,0)
-espBtn.Text = "ESP Player"
-espBtn.Font = Enum.Font.SourceSansBold
-espBtn.TextSize = 20
-espBtn.BackgroundColor3 = Color3.fromRGB(0,255,0)
-espBtn.TextColor3 = Color3.fromRGB(255,255,255)
-espBtn.Parent = selectFrame
-
-local floatBtnMain = Instance.new("TextButton")
-floatBtnMain.Size = UDim2.new(0.8,0,0,40)
-floatBtnMain.Position = UDim2.new(0.1,0,0.76,0)
-floatBtnMain.Text = "Float"
-floatBtnMain.Font = Enum.Font.SourceSansBold
-floatBtnMain.TextSize = 20
-floatBtnMain.BackgroundColor3 = Color3.fromRGB(0,170,255)
-floatBtnMain.TextColor3 = Color3.fromRGB(255,255,255)
-floatBtnMain.Parent = selectFrame
-
-local infJumpBtn = Instance.new("TextButton")
-infJumpBtn.Size = UDim2.new(0.8,0,0,40)
-infJumpBtn.Position = UDim2.new(0.1,0,0.93,0)
-infJumpBtn.Text = "Infinite Jump"
-infJumpBtn.Font = Enum.Font.SourceSansBold
-infJumpBtn.TextSize = 20
-infJumpBtn.BackgroundColor3 = Color3.fromRGB(255,170,0)
-infJumpBtn.TextColor3 = Color3.fromRGB(255,255,255)
-infJumpBtn.Parent = selectFrame
-
---================= ربط الأزرار =================--
-v1Btn.MouseButton1Click:Connect(createV1)
-v2Btn.MouseButton1Click:Connect(createV2)
-espBtn.MouseButton1Click:Connect(function()
-	enableESP()
-	espBtn:Destroy()
-end)
-floatBtnMain.MouseButton1Click:Connect(function()
-	createFloatGUI()
-	floatBtnMain:Destroy()
-end)
-infJumpBtn.MouseButton1Click:Connect(function()
-	enableInfiniteJump()
-	infJumpBtn:Destroy()
-end)
+		end)
+	else
+		flying = false
+		hum.PlatformStand = false
+		hrp.Velocity = Vector3.new(0,0,0)
+	end
